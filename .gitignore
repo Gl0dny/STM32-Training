@@ -14,5 +14,4 @@
 **.project
 **.launch
 **/.settings
-.vscode/**
-.setting/**
+**/.metadata
