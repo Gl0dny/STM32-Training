@@ -54,23 +54,20 @@ static void MX_GPIO_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+static const uint16_t LED_PIN[] = {
+		LED1_Pin, LED2_Pin, LED3_Pin, LED4_Pin, LED5_Pin,
+		LED6_Pin, LED7_Pin, LED8_Pin, LED9_Pin, LED10_Pin,
+};
+
 void led_set(int led, bool turn_on)
 {
-	GPIO_PinState state;
+	GPIO_PinState state = (turn_on) ? GPIO_PIN_SET : GPIO_PIN_RESET;
 
-	if (turn_on)
+	if (led >= 0 && led < 10)
 	{
-		state = GPIO_PIN_SET;
-	}
-	else
-	{
-		state = GPIO_PIN_RESET;
+		HAL_GPIO_WritePin(LED1_GPIO_Port, LED_PIN[led], state);
 	}
 
-	if ( led >= 0 && led < 10)
-	{
-		HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin << led, state);
-	}
 }
 
 /* USER CODE END 0 */
