@@ -54,14 +54,22 @@ static void MX_GPIO_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-static GPIO_TypeDef* const LED_PORT[] = {
-		LED1_GPIO_Port, LED2_GPIO_Port, LED3_GPIO_Port, LED4_GPIO_Port, LED5_GPIO_Port,
-		LED6_GPIO_Port, LED7_GPIO_Port, LED8_GPIO_Port, LED9_GPIO_Port, LED10_GPIO_Port,
-};
+typedef struct {
+	GPIO_TypeDef* port;
+	uint16_t pin;
+}pin_t;
 
-static const uint16_t LED_PIN[] = {
-		LED1_Pin, LED2_Pin, LED3_Pin, LED4_Pin, LED5_Pin,
-		LED6_Pin, LED7_Pin, LED8_Pin, LED9_Pin, LED10_Pin,
+static const pin_t LED[] = {
+		{ LED1_GPIO_Port, LED1_Pin },
+		{ LED2_GPIO_Port, LED2_Pin },
+		{ LED3_GPIO_Port, LED3_Pin },
+		{ LED4_GPIO_Port, LED4_Pin },
+		{ LED5_GPIO_Port, LED5_Pin },
+		{ LED6_GPIO_Port, LED6_Pin },
+		{ LED7_GPIO_Port, LED7_Pin },
+		{ LED8_GPIO_Port, LED8_Pin },
+		{ LED9_GPIO_Port, LED9_Pin },
+		{ LED10_GPIO_Port, LED10_Pin },
 };
 
 void led_set(int led, bool turn_on)
@@ -70,7 +78,7 @@ void led_set(int led, bool turn_on)
 
 	if (led >= 0 && led < 10)
 	{
-		HAL_GPIO_WritePin(LED_PORT[led], LED_PIN[led], state);
+		HAL_GPIO_WritePin(LED[led].port, LED[led].pin, state);
 	}
 
 }
