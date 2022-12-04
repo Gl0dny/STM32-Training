@@ -32,6 +32,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define LINE_MAX_LENGTH 80
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -56,6 +57,31 @@ static void MX_USART2_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+static char line_buffer[LINE_MAX_LENGTH + 1];
+static uint32_t line_length;
+
+void line_append(uint8_t value)
+{
+	if ( (value == '\r') || (value ==  '\n') )
+	{
+		if (line_length > 0)
+		{
+			line_buffer[line_length] = '\0';
+			printf("Received: %s\n", line_buffer);
+			line_length = 0;
+		}
+	}
+	else
+	{
+		if (line_length >= LINE_MAX_LENGTH)
+		{
+			line_length = 0;
+			printf("Too long sentence - maximum is 80 characters\n");
+		}
+		line_buffer[line_length++] = value;
+	}
+}
 
 int __io_putchar(int ch)
 {
@@ -117,9 +143,14 @@ printf("Number pi is: %f\n", pi);
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /* USER CODE END WHILE */
+	  uint8_t value;
+	  if (HAL_UART_Receive(&huart2, &value, 1, 0) == HAL_OK)
+	  {
+		  line_append(value);
+	  }
+  /* USER CODE END WHILE */
 
-    /* USER CODE BEGIN 3 */
+  /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
 }
@@ -192,7 +223,8 @@ static void MX_USART2_UART_Init(void)
   huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
   huart2.Init.OverSampling = UART_OVERSAMPLING_16;
   huart2.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
-  huart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  huart2.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_RXOVERRUNDISABLE_INIT;
+  huart2.AdvancedInit.OverrunDisable = UART_ADVFEATURE_OVERRUN_DISABLE;
   if (HAL_UART_Init(&huart2) != HAL_OK)
   {
     Error_Handler();
