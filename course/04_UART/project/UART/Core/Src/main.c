@@ -108,6 +108,9 @@ printf("Hello world! 2");
 printf("Hello world! 3");
 fflush(stdout);
 
+float pi = 3.14f;
+printf("Number pi is: %f\n", pi);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
