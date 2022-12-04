@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -88,6 +88,9 @@ int main(void)
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+
+  uint8_t message[] = "Hello world!\r\n";
+  HAL_UART_Transmit(&huart2, message, strlen(message), HAL_MAX_DELAY);
 
   /* USER CODE END 2 */
 
