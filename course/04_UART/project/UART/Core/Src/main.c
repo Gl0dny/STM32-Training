@@ -101,7 +101,12 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
-printf("Hello world!\r\n");
+printf("Hello world!\n");
+
+printf("Hello world! 1");
+printf("Hello world! 2");
+printf("Hello world! 3");
+fflush(stdout);
 
   /* USER CODE END 2 */
 
