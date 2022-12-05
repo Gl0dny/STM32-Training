@@ -90,7 +90,14 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	}
 }
 
-int message_number = 0;
+typedef enum
+{
+	MESSAGE_1,
+	MESSAGE_2,
+	DONE
+}message_status_t;
+
+message_status_t message_status = MESSAGE_1;
 
 void send_next_message(void)
 {
@@ -101,11 +108,11 @@ void send_next_message(void)
 	{
 	case 0:
 		HAL_UART_Transmit_IT(&huart2, (uint8_t*)message, strlen(message));
-		message_number = 1;
+		message_number = MESSAGE_2;
 		break;
 	case 1:
 		HAL_UART_Transmit_IT(&huart2, (uint8_t*)message2, strlen(message2));
-		message_number = 2;
+		message_number = DONE;
 		break;
 	default:
 		break;
