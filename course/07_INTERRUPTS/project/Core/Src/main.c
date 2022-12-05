@@ -35,6 +35,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define LINE_MAX_LENGTH 80
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -56,6 +57,46 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+static char line_buffer[LINE_MAX_LENGTH + 1];
+static uint32_t line_length;
+
+void line_append(uint8_t value)
+{
+	if ( (value == '\r') || (value ==  '\n') )
+	{
+		if (line_length > 0)
+		{
+			line_buffer[line_length] = '\0';
+
+
+			if ( strcmp(line_buffer, "on") == 0)
+			{
+				HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_SET);
+			}
+			else if ( strcmp(line_buffer, "off") == 0)
+			{
+				HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+			}
+			else
+			{
+				printf("Unknown command:\n");
+			}
+			printf("Received: %s\n", line_buffer);
+
+			line_length = 0;
+		}
+	}
+	else
+	{
+		if (line_length >= LINE_MAX_LENGTH)
+		{
+			line_length = 0;
+			printf("Too long sentence - maximum is 80 characters\n");
+		}
+		line_buffer[line_length++] = value;
+	}
+}
 
 int __io_putchar(int ch)
 {
@@ -104,15 +145,15 @@ void send_next_message(void)
 	static char message[] = "Hello World!\r\n";
 	static char message2[] = "Interrupts\r\n";
 
-	switch (message_number)
+	switch (message_status)
 	{
 	case 0:
 		HAL_UART_Transmit_IT(&huart2, (uint8_t*)message, strlen(message));
-		message_number = MESSAGE_2;
+		message_status = MESSAGE_2;
 		break;
 	case 1:
 		HAL_UART_Transmit_IT(&huart2, (uint8_t*)message2, strlen(message2));
-		message_number = DONE;
+		message_status = DONE;
 		break;
 	default:
 		break;
@@ -125,6 +166,17 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 		{
 			send_next_message();
 		}
+}
+
+uint8_t uart_rx_buffer;
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	if (huart == &huart2)
+	{
+		line_append(uart_rx_buffer);
+		HAL_UART_Receive_IT(huart, &uart_rx_buffer, 1);
+	}
 }
 
 /* USER CODE END 0 */
@@ -161,6 +213,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
   send_next_message();
+  HAL_UART_Receive_IT(&huart2, &uart_rx_buffer, 1);
 
   /* USER CODE END 2 */
 
@@ -168,6 +221,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
 
   uint32_t old_push_counter = push_counter;
+
   while (1)
   {
 
