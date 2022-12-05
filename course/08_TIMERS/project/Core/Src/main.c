@@ -17,6 +17,7 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+#include <math.h>
 #include "main.h"
 #include "tim.h"
 #include "usart.h"
@@ -88,6 +89,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 //	}
 //}
 
+float calc_pwm(float val)
+{
+	const float k = 0.13f;
+	const float x0 = 70.0f;
+	return 10000.0f / (1.0f + exp(-k * (val - x0)));
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -131,8 +139,23 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+  uint32_t counter;
+
   while (1)
   {
+
+	  float r = 50 * (1.0f + sin(counter / 100.0f));
+	  float g = 50 * (1.0f + sin(1.5f * counter / 100.0f));
+	  float b = 50 * (1.0f + sin(2.0f * counter / 100.0f));
+
+	  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, calc_pwm(b));
+	  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, calc_pwm(g));
+	  __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, calc_pwm(r));
+
+	  HAL_Delay(10);
+	  counter++;
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
