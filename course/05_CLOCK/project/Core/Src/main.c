@@ -128,10 +128,22 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  if ( is_button_pressed() )
+		  {
+		  	  RTC_TimeTypeDef new_time = {0};
+
+		  	  while ( is_button_pressed() ) {}
+
+		  	  new_time.Hours = 11;
+		  	  new_time.Minutes = 59;
+		  	  new_time.Seconds = 50;
+		  	  HAL_RTC_SetTime(&hrtc, &new_time, RTC_FORMAT_BIN);
+		  }
+
 	  HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);
 	  HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);
 	  printf("Current time: %02d:%02d:%02d\n", time.Hours, time.Minutes, time.Seconds);
-	  HAL_Delay(200);
+	  HAL_Delay(1000);
 
     /* USER CODE END WHILE */
 
