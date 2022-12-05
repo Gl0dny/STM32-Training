@@ -58,10 +58,38 @@ void SystemClock_Config(void);
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	if (htim == &htim6)
+	if (htim == &htim3)
 		{
 			HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
+
+			HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_SET);
+			HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_SET);
 		}
+}
+
+void HAL_TIM_OC_DelayElapsedCallback(TIM_HandleTypeDef *htim)
+{
+	if (htim == &htim3)
+	{
+		switch(HAL_TIM_GetActiveChannel(&htim3))
+		{
+		case HAL_TIM_ACTIVE_CHANNEL_1:
+			HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
+		break;
+
+		case HAL_TIM_ACTIVE_CHANNEL_2:
+			HAL_GPIO_WritePin(LED2_GPIO_Port, LED2_Pin, GPIO_PIN_RESET);
+		break;
+
+		case HAL_TIM_ACTIVE_CHANNEL_3:
+			HAL_GPIO_WritePin(LED3_GPIO_Port, LED3_Pin, GPIO_PIN_RESET);
+		break;
+
+		default:
+		break;
+		}
+	}
 }
 
 /* USER CODE END 0 */
@@ -95,10 +123,13 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
-  MX_TIM6_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
-  HAL_TIM_Base_Start_IT(&htim6);
+  HAL_TIM_Base_Start_IT(&htim3);
+  HAL_TIM_OC_Start(&htim3, TIM_CHANNEL_1);
+  HAL_TIM_OC_Start(&htim3, TIM_CHANNEL_2);
+  HAL_TIM_OC_Start(&htim3, TIM_CHANNEL_3);
 
   /* USER CODE END 2 */
 
