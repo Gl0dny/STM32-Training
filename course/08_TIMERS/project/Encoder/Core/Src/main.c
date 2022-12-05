@@ -69,22 +69,22 @@ int __io_putchar(int ch)
 	return 1;
 }
 
-volatile int32_t captured_value;
+//volatile int32_t captured_value;
 
-void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
-{
-	if (htim == &htim3)
-	{
-		switch (HAL_TIM_GetActiveChannel(&htim3))
-		{
-		case HAL_TIM_ACTIVE_CHANNEL_1:
-			captured_value = HAL_TIM_ReadCapturedValue(&htim3, TIM_CHANNEL_1);
-			break;
-		default:
-			break;
-		}
-	}
-}
+//void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
+//{
+//	if (htim == &htim3)
+//	{
+//		switch (HAL_TIM_GetActiveChannel(&htim3))
+//		{
+//		case HAL_TIM_ACTIVE_CHANNEL_1:
+//			captured_value = HAL_TIM_ReadCapturedValue(&htim3, TIM_CHANNEL_1);
+//			break;
+//		default:
+//			break;
+//		}
+//	}
+//}
 
 /* USER CODE END 0 */
 
@@ -124,9 +124,11 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  HAL_TIM_Base_Start(&htim3);
-  HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_1);
+//  HAL_TIM_Base_Start(&htim3);
+//  HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_1);
+  	HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);
 //  uint32_t old_value = 0;
+  	int16_t prev_value = 0;
 
   while (1)
   {
@@ -136,12 +138,18 @@ int main(void)
 //		  printf("value = %lu\n	", value);
 //		  old_value = value;
 //	  }
-	  if (captured_value != 0)
-	  {
-		  printf("Value = %lu\n", captured_value);
-		  captured_value = 0;
-	  }
+//	  if (captured_value != 0)
+//	  {
+//		  printf("Value = %lu\n", captured_value);
+//		  captured_value = 0;
+//	  }
 
+	  int16_t value = __HAL_TIM_GET_COUNTER(&htim3);
+	  if (value != prev_value)
+	  {
+		  printf("Value = %d\n", value);
+		  prev_value = value;
+	  }
 
     /* USER CODE END WHILE */
 
