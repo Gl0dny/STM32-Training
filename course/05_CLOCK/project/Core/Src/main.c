@@ -121,6 +121,19 @@ int main(void)
 
   RTC_TimeTypeDef time;
   RTC_DateTypeDef date;
+  RTC_TimeTypeDef new_time = {0};
+  RTC_DateTypeDef new_date = {0};
+
+  new_time.Hours = 11;
+  new_time.Minutes = 59;
+  new_time.Seconds = 50;
+  new_date.Year = 22;
+  new_date.Month = 12;
+  new_date.Date = 5;
+  new_date.WeekDay = RTC_WEEKDAY_MONDAY;
+
+  HAL_RTC_SetTime(&hrtc, &new_time, RTC_FORMAT_BIN);
+  HAL_RTC_SetDate(&hrtc, &new_date, RTC_FORMAT_BIN);
 
   /* USER CODE END 2 */
 
@@ -128,21 +141,11 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  if ( is_button_pressed() )
-		  {
-		  	  RTC_TimeTypeDef new_time = {0};
-
-		  	  while ( is_button_pressed() ) {}
-
-		  	  new_time.Hours = 11;
-		  	  new_time.Minutes = 59;
-		  	  new_time.Seconds = 50;
-		  	  HAL_RTC_SetTime(&hrtc, &new_time, RTC_FORMAT_BIN);
-		  }
 
 	  HAL_RTC_GetTime(&hrtc, &time, RTC_FORMAT_BIN);
 	  HAL_RTC_GetDate(&hrtc, &date, RTC_FORMAT_BIN);
 	  printf("Current time: %02d:%02d:%02d\n", time.Hours, time.Minutes, time.Seconds);
+	  printf("RTC: %04d-%02d-%02d, %02d:%02d:%02d\n", 2000 + date.Year, date.Month, date.Date, time.Hours, time.Minutes, time.Seconds);
 	  HAL_Delay(1000);
 
     /* USER CODE END WHILE */
@@ -168,11 +171,16 @@ void SystemClock_Config(void)
     Error_Handler();
   }
 
+  /** Configure LSE Drive Capability
+  */
+  HAL_PWR_EnableBkUpAccess();
+  __HAL_RCC_LSEDRIVE_CONFIG(RCC_LSEDRIVE_LOW);
+
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
   */
-  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_MSI;
-  RCC_OscInitStruct.LSIState = RCC_LSI_ON;
+  RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_LSE|RCC_OSCILLATORTYPE_MSI;
+  RCC_OscInitStruct.LSEState = RCC_LSE_ON;
   RCC_OscInitStruct.MSIState = RCC_MSI_ON;
   RCC_OscInitStruct.MSICalibrationValue = 0;
   RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_6;
@@ -195,6 +203,10 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+
+  /** Enable MSI Auto calibration
+  */
+  HAL_RCCEx_EnableMSIPLLMode();
 }
 
 /**
