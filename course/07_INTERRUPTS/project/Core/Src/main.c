@@ -90,6 +90,36 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	}
 }
 
+int message_number = 0;
+
+void send_next_message(void)
+{
+	static char message[] = "Hello World!\r\n";
+	static char message2[] = "Interrupts\r\n";
+
+	switch (message_number)
+	{
+	case 0:
+		HAL_UART_Transmit_IT(&huart2, (uint8_t*)message, strlen(message));
+		message_number = 1;
+		break;
+	case 1:
+		HAL_UART_Transmit_IT(&huart2, (uint8_t*)message2, strlen(message2));
+		message_number = 2;
+		break;
+	default:
+		break;
+	}
+}
+
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
+{
+	if (huart == &huart2)
+		{
+			send_next_message();
+		}
+}
+
 /* USER CODE END 0 */
 
 /**
@@ -123,6 +153,8 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
+  send_next_message();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -131,6 +163,7 @@ int main(void)
   uint32_t old_push_counter = push_counter;
   while (1)
   {
+
 	  if ( old_push_counter != push_counter )
 	  {
 		  printf("USER_BUTTON counter = %lu\n", push_counter);
