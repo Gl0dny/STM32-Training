@@ -45,7 +45,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-
+volatile static uint16_t joystick[2];
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -109,10 +109,10 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  volatile static uint16_t value[2];
+//  volatile static uint16_t value[2];
 
   HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
-  HAL_ADC_Start_DMA(&hadc1, (uint32_t*)value, 2);
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t*)joystick, 2);
 //  HAL_ADC_Start(&hadc1);
   while (1)
   {
@@ -121,9 +121,9 @@ int main(void)
 
 //	  printf("ADC = %lu (%.3f [V])\n", value, voltage);
 
-	  printf("value1=%lu, value2=%lu\n", value[0], value[1]);
+	  printf("VRx=%lu, VRy=%lu\n", joystick[0], joystick[1]);
 
-	  HAL_Delay(250);
+	  HAL_Delay(100);
 
     /* USER CODE END WHILE */
 
