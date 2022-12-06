@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "adc.h"
+#include "dma.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -99,6 +100,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_USART2_UART_Init();
   MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
@@ -107,20 +109,13 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  volatile static uint16_t value[2];
+
   HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t*)value, 2);
 //  HAL_ADC_Start(&hadc1);
   while (1)
   {
-
-	  uint32_t value[2];
-
-	  HAL_ADC_Start(&hadc1);
-	  HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
-	  value[0] = HAL_ADC_GetValue(&hadc1);
-
-	  HAL_ADC_Start(&hadc1);
-	  HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
-	  value[1] = HAL_ADC_GetValue(&hadc1);
 
 //	  float voltage = 3.3f * (value / 4096.0f);
 
