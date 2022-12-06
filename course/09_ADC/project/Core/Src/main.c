@@ -108,14 +108,25 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
-  HAL_ADC_Start(&hadc1);
+//  HAL_ADC_Start(&hadc1);
   while (1)
   {
 
-	  uint32_t value = HAL_ADC_GetValue(&hadc1);
-	  float voltage = 3.3f * (value / 4096.0f);
+	  uint32_t value[2];
 
-	  printf("ADC = %lu (%.3f [V])\n", value, voltage);
+	  HAL_ADC_Start(&hadc1);
+	  HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+	  value[0] = HAL_ADC_GetValue(&hadc1);
+
+	  HAL_ADC_Start(&hadc1);
+	  HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+	  value[1] = HAL_ADC_GetValue(&hadc1);
+
+//	  float voltage = 3.3f * (value / 4096.0f);
+
+//	  printf("ADC = %lu (%.3f [V])\n", value, voltage);
+
+	  printf("value1=%lu, value2=%lu\n", value[0], value[1]);
 
 	  HAL_Delay(250);
 
