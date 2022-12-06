@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "adc.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -99,14 +100,26 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
+  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
   while (1)
   {
+	  HAL_ADC_Start(&hadc1);
+	  HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+
+	  uint32_t value = HAL_ADC_GetValue(&hadc1);
+	  float voltage = 3.3f * value / 4096.0f;
+
+	  printf("ADC = %lu (%.3f [V])\n", value, voltage);
+
+	  HAL_Delay(250);
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
